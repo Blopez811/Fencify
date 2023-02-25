@@ -1,5 +1,5 @@
 const express = require('express');
-const db = require('../config/connection');
+const db = require('./config/connection');
 const { ApolloServer } = require('apollo-server-express');
 const { typeDefs, resolvers } = require('./schemas');
 
@@ -9,15 +9,19 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const server = new ApolloServer({
+const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
 });
 
-server.applyMiddleware({ app });
-
-db.once('open', () => {
-  app.listen(PORT, () => {
-    console.log(`API server running on port ${PORT}!`);
+async function startServer(){
+  await apolloServer.start()
+  apolloServer.applyMiddleware({ app });
+  db.once('open', () => {
+    app.listen(PORT, () => {
+      console.log(`API server running on port ${PORT}!`);
+    });
   });
-});
+}
+
+startServer();

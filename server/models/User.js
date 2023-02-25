@@ -21,7 +21,7 @@ const userSchema = new Schema(
             type: String,
             required: true,
         },
-        appointments: [Appointment],
+        appointments: [Appointment.schema],
     },
     // set this to use virtual below
     {
