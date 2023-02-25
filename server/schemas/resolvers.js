@@ -13,6 +13,25 @@ const resolvers = {
   
         throw new AuthenticationError('Not logged in');
       },
+      allUsers: async () => {
+        try { 
+          const userData = await User.find({});
+          return userData;
+        }
+        catch (err) {
+          console.log(err);
+          throw new Error('Failed to retrieve users');
+        }
+      }
+    },
+
+    Mutation: {
+      signup: async (parent, { input }) => {
+        const user = await User.create(input);
+        const token = signToken(user);
+  
+        return { token, user };
+      },
     }
 
 }
