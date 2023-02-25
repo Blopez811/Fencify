@@ -22,7 +22,11 @@ const resolvers = {
           console.log(err);
           throw new Error('Failed to retrieve users');
         }
-      }
+      },
+      appointments: async () => {
+        const appointments = await Appointment.find({});
+        return appointments;
+      },
     },
 
     Mutation: {
@@ -30,6 +34,24 @@ const resolvers = {
         const user = await User.create(input);
         const token = signToken(user);
   
+        return { token, user };
+      },
+      login: async (parent, { input }) => {
+        const { email, password } = input;
+  
+        const user = await User.findOne({ email });
+  
+        if (!user) {
+          throw new AuthenticationError('Incorrect email or password');
+        }
+  
+        const correctPassword = await user.isCorrectPassword(password);
+  
+        if (!correctPassword) {
+          throw new AuthenticationError('Incorrect email or password');
+        }
+  
+        const token = signToken(user);
         return { token, user };
       },
     }
