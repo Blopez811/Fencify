@@ -1,62 +1,109 @@
-const { AuthenticationError } = require('apollo-server-express');
-const { User, Appointment } = require('../models');
-const { signToken } = require('../utils/auth');
+const { AuthenticationError } = require("apollo-server-express");
+const { User, Appointment } = require("../models");
+const { signToken } = require("../utils/auth");
 
 const resolvers = {
-    Query: {
-      me: async (parent, args, context) => {
-        if (context.user) {
-          const userData = await User.findOne({ _id: context.user._id }).select('-__v -password');
-  
-          return userData;
-        }
-  
-        throw new AuthenticationError('Not logged in');
-      },
-      allUsers: async () => {
-        try { 
-          const userData = await User.find({});
-          return userData;
-        }
-        catch (err) {
-          console.log(err);
-          throw new Error('Failed to retrieve users');
-        }
-      },
-      appointments: async () => {
-        const appointments = await Appointment.find({});
-        return appointments;
-      },
+  Query: {
+    me: async (parent, args, context) => {
+      if (context.user) {
+        const userData = await User.findOne({ _id: context.user._id }).select(
+          "-__v -password"
+        );
+
+        return userData;
+      }
+
+      throw new AuthenticationError("Not logged in");
     },
+    allUsers: async () => {
+      try {
+        const userData = await User.find({});
+        return userData;
+      } catch (err) {
+        console.log(err);
+        throw new Error("Failed to retrieve users");
+      }
+    },
+    appointments: async () => {
+      const appointments = await Appointment.find({});
+      return appointments;
+    },
+  },
 
-    Mutation: {
-      signup: async (parent, { input }) => {
-        const user = await User.create(input);
-        const token = signToken(user);
-  
-        return { token, user };
-      },
-      login: async (parent, { input }) => {
-        const { email, password } = input;
-  
-        const user = await User.findOne({ email });
-  
+  Mutation: {
+    signup: async (parent, { input }) => {
+      const user = await User.create(input);
+      const token = signToken(user);
+
+      return { token, user };
+    },
+    login: async (parent, { input }) => {
+      const { email, password } = input;
+
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new AuthenticationError("Incorrect email or password");
+      }
+
+      const correctPassword = await user.isCorrectPassword(password);
+
+      if (!correctPassword) {
+        throw new AuthenticationError("Incorrect email or password");
+      }
+
+      const token = signToken(user);
+      return { token, user };
+    },
+    createAppointment: async (_, { input }, { user }) => {
+      try {
+        console.log("test");
+        console.log("here is user: ", user);
+        const {
+          date,
+          time,
+          customerName,
+          phoneNumber,
+          email,
+          propertyAddress,
+        } = input;
+
         if (!user) {
-          throw new AuthenticationError('Incorrect email or password');
+          throw new AuthenticationError(
+            "User is not logged in. Please log in to create an appointment."
+          );
         }
-  
-        const correctPassword = await user.isCorrectPassword(password);
-  
-        if (!correctPassword) {
-          throw new AuthenticationError('Incorrect email or password');
-        }
-  
-        const token = signToken(user);
-        return { token, user };
-      },
-    }
+        // Create a new appointment using the provided date, location, and the authenticated user's ID.
+        const newAppointment = await Appointment.create({
+          date,
+          time,
+          customerName,
+          phoneNumber,
+          email,
+          propertyAddress,
+          user: user._id,
+        });
 
-}
+        // Update the appointments field in the associated User model.
+        await User.findByIdAndUpdate(user._id, {
+          $push: { appointments: newAppointment._id },
+        });
+
+        // Return the newly created appointment as the result.
+        // Populate the user field in the newAppointment object to include the username.
+        const populatedAppointment = await newAppointment
+          .populate("user")
 
 
-module.exports = resolvers
+        // Return the populated appointment object, which includes the user with the username.
+        return populatedAppointment;
+      } catch (error) {
+        // Handle any errors that occur during the appointment creation process.
+        console.error(error);
+        throw new Error("Failed to create appointment");
+      }
+    },
+  },
+};
+
+module.exports = resolvers;
