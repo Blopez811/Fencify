@@ -103,6 +103,44 @@ const resolvers = {
         throw new Error("Failed to create appointment");
       }
     },
+
+    updateAppointment: async (_, { _id, input }, { user }) => {
+      try {
+        console.log('test')
+        if (!user) {
+          throw new AuthenticationError('User is not logged in. Please log in to update an appointment.');
+        }
+
+        // Find the appointment by ID
+        const appointment = await Appointment.findOne({ _id });
+
+        if (!appointment) {
+          throw new Error('Appointment not found');
+        }
+        console.log('here is appointment: ', appointment)
+        // Check if the authenticated user owns the appointment
+        if (appointment.user.toString() !== user._id.toString()) {
+          throw new AuthenticationError('You are not authorized to update this appointment');
+        }
+
+        // Update the appointment fields with the provided input values
+        appointment.date = input.date || appointment.date;
+        appointment.time = input.time || appointment.time;
+        appointment.customerName = input.customerName || appointment.customerName;
+        appointment.phoneNumber = input.phoneNumber || appointment.phoneNumber;
+        appointment.email = input.email || appointment.email;
+        appointment.propertyAddress = input.propertyAddress || appointment.propertyAddress;
+
+        // Save the updated appointment
+        const updatedAppointment = await appointment.save();
+
+        return updatedAppointment;
+      } catch (error) {
+        // Handle any errors that occur during the appointment update process
+        console.error(error);
+        throw new Error('Failed to update appointment');
+      }
+    },
   },
 };
 

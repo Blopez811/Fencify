@@ -54,7 +54,7 @@ const typeDefs = gql`
     signup(input: SignupInput!): Auth
     login(input: LoginInput!): Auth
     createAppointment(input: AppointmentInput!): Appointment
-    updateAppointment(input: AppointmentInput!): Appointment
+    updateAppointment(_id: ID! input: AppointmentInput!): Appointment
     deleteAppointment(_id: ID!): Appointment
   }
 `;
