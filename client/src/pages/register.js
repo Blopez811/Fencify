@@ -3,6 +3,7 @@ import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import { useMutation } from '@apollo/client';
 import { REGISTER_USER } from '../utils/mutations.js';
 import Navbar from '../components/Navbar';
+import { useRouter } from 'next/router';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -10,6 +11,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
 
   const [registerUser, { data, loading, error }] = useMutation(REGISTER_USER);
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,9 +25,10 @@ const Register = () => {
     try {
       const response = await registerUser({ variables: { input } });
       const { token, user } = response.data.signup;
-      // Perform further actions with the token and user information
+       
+       localStorage.setItem('token', token);
+       router.push('/dashboard');
     } catch (error) {
-      // Handle error
       console.log(error);
     }
   };

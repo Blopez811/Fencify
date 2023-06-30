@@ -11,3 +11,4 @@ export const REGISTER_USER = gql`
     }
   }
 `;
+
