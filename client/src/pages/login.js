@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
-
+import Navbar from "../components/Navbar"
 const Login = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -12,6 +12,8 @@ const Login = () => {
   };
 
   return (
+    <>
+    <Navbar/>
     <Container maxWidth="xs">
       <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">
@@ -50,6 +52,7 @@ const Login = () => {
         </Box>
       </Box>
     </Container>
+    </>
   );
 };
 

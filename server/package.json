@@ -4,7 +4,8 @@
   "description": "Fencify is a combination of \"Fencing\" and \"Simplify\", this application makes the whole process of having a fence installed on your property easy, from estimate to completion",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "repository": {
     "type": "git",
