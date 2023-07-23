@@ -47,7 +47,7 @@ const Login = () => {
             color="primary"
             sx={{ marginTop: 3, marginBottom: 2 }}
           >
-            Sign Up
+            Login
           </Button>
         </Box>
       </Box>

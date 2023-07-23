@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 
 const Navbar = () => {
+  const token = typeof window !== 'undefined' && localStorage.getItem('token');
+
   return (
     <nav>
       <ul>
@@ -14,6 +16,11 @@ const Navbar = () => {
         <li>
           <Link href="/register">Register</Link>
         </li>
+        {token && (
+          <li>
+            <Link href="/dashboard">Dashboard</Link>
+          </li>
+        )}
       </ul>
     </nav>
   );

@@ -1,8 +1,28 @@
-import { ApolloProvider } from '@apollo/client';
-import client from '../lib/apolloClient';
-
+import { ApolloProvider, ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
+import { setContext } from '@apollo/client/link/context';
 
 function MyApp({ Component, pageProps }) {
+  const httpLink = createHttpLink({
+    uri: 'http://localhost:3001/graphql', // Update to your GraphQL server URI
+  });
+
+  const authLink = setContext((_, { headers }) => {
+    // Get the authentication token from local storage if it exists
+    const token = localStorage.getItem('token');
+    // Return the headers to the context so httpLink can read them
+    return {
+      headers: {
+        ...headers,
+        authorization: token ? `Bearer ${token}` : "",
+      }
+    }
+  });
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache()
+  });
+
   return (
     <ApolloProvider client={client}>
       <Component {...pageProps} />
@@ -11,4 +31,3 @@ function MyApp({ Component, pageProps }) {
 }
 
 export default MyApp;
-

@@ -1,15 +1,11 @@
 import React from 'react';
 import { Container, Typography, Box } from '@mui/material';
 import { useQuery } from '@apollo/client';
-import { GET_APPOINTMENTS } from '../utils/queries.js';
+import { GET_CURRENT_USER } from '../utils/queries.js';
 import Navbar from '../components/Navbar';
 
 const Dashboard = () => {
-
-// TODO: const userId needs to be defined and figured out
-  const { loading, error, data } = useQuery(GET_APPOINTMENTS, {
-    variables: {id: userId}
-  });
+const { loading, error, data } = useQuery(GET_CURRENT_USER)
 
   if (loading) {
     return <p>Loading...</p>;
@@ -20,7 +16,7 @@ const Dashboard = () => {
     return <p>Error occurred</p>;
   }
 
-  const appointments = data?.appointments || [];
+  const appointments = data?.me?.appointments || [];
 
   return (
     <>
