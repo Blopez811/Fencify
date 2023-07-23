@@ -3,7 +3,8 @@ import Link from 'next/link';
 
 const Navbar = () => {
   const token = typeof window !== 'undefined' && localStorage.getItem('token');
-
+  // TODO make the login choice conditionally render only if user is not logged in. Else it should say Logout. 
+  // TODO The logout link should destroy the session/token
   return (
     <nav>
       <ul>

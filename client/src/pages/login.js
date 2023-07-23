@@ -1,14 +1,32 @@
 import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import Navbar from "../components/Navbar"
+import { useMutation } from '@apollo/client'
+import { LOGIN } from '../utils/mutations'
+import { useRouter } from 'next/router';
+
 const Login = () => {
-  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const [login, { data, loading, error }] = useMutation(LOGIN);
+  const router = useRouter();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add logic to register the user
+
+    const input = { email, password };
+
+    try {
+      const response = await login({ variables: { input } });
+      const { token } = response.data.login;
+       
+      localStorage.setItem('token', token);
+      router.push('/dashboard');
+    } catch (error) {
+      console.error('Failed to login user', error);
+      alert("Invalid credentials please try again!")
+    }
   };
 
   return (
@@ -25,9 +43,9 @@ const Login = () => {
             margin="normal"
             required
             fullWidth
-            label="Username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            label="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
     
           <TextField
