@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar"
 import { useMutation } from '@apollo/client'
 import { LOGIN } from '../utils/mutations'
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ const Login = () => {
       const response = await login({ variables: { input } });
       const { token } = response.data.login;
        
-      localStorage.setItem('token', token);
+      Cookies.set('token', token);
       router.push('/dashboard');
     } catch (error) {
       console.error('Failed to login user', error);

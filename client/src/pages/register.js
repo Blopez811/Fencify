@@ -4,6 +4,7 @@ import { useMutation } from '@apollo/client';
 import { REGISTER_USER } from '../utils/mutations.js';
 import Navbar from '../components/Navbar';
 import { useRouter } from 'next/router';
+import Cookies from 'js-cookie'; 
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -26,7 +27,7 @@ const Register = () => {
       const response = await registerUser({ variables: { input } });
       const { token, user } = response.data.signup;
        
-       localStorage.setItem('token', token);
+       Cookies.set('token', token);
        router.push('/dashboard');
     } catch (error) {
       console.log(error);
