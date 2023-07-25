@@ -8,7 +8,9 @@ const Navbar = () => {
 
   useEffect(() => {
     const token = Cookies.get('token')
+    console.log('here is token in useEffect: ', token)
     setIsAuthenticated(!!token)
+    console.log('Dat juicy authentication status: ', isAuthenticated)
   }, []);
 
   return (
@@ -25,6 +27,11 @@ const Navbar = () => {
         <li>
           <Link href="/register">Register</Link>
         </li>
+        {isAuthenticated && (
+          <li>
+          <Link href="/logout">Logout</Link>
+        </li>
+        )}
         {isAuthenticated && (
           <li>
             <Link href="/dashboard">Dashboard</Link>
