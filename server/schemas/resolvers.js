@@ -5,6 +5,7 @@ const { signToken } = require("../utils/auth");
 const resolvers = {
   Query: {
     me: async (parent, args, context) => {
+      console.log('here is dat context.user: ', context.user)
       if (context.user) {
         const userData = await User.findOne({ _id: context.user._id }).select(
           "-__v -password"
@@ -31,13 +32,18 @@ const resolvers = {
   },
 
   Mutation: {
-    signup: async (parent, { input }) => {
+    signup: async (parent, { input }, context) => {
       const user = await User.create(input);
       const token = signToken(user);
+      context.res.cookie('token', token, {
+        httpOnly: true,
+        // maxAge: 1000 * 60 * 60 * 2, // would set cookie expiration to 2 hours
+        // secure: true, // set to true if your using https
+      });
 
       return { token, user };
     },
-    login: async (parent, { input }) => {
+    login: async (parent, { input }, context) => {
       const { email, password } = input;
 
       const user = await User.findOne({ email });
@@ -53,6 +59,11 @@ const resolvers = {
       }
 
       const token = signToken(user);
+      context.res.cookie('token', token, {
+        httpOnly: true,
+        // maxAge: 1000 * 60 * 60 * 2, // would set cookie expiration to 2 hours
+        // secure: true, // set to true if your using https
+      });
       return { token, user };
     },
     createAppointment: async (_, { input }, { user }) => {

@@ -5,21 +5,20 @@ const expiration = '2h';
 
 module.exports = {
   authMiddleware: function ({ req }) {
-    // allows token to be sent via req.body, req.query, or headers
-    let token = req.body.token || req.query.token || req.headers.authorization;
-
-    // ["Bearer", "<tokenvalue>"]
-    if (req.headers.authorization) {
-      token = token.split(' ').pop().trim();
-    }
-
+    // allows token to be sent via cookies
+    let token = req.cookies.token;
+    console.log("Auth Middleware triggered."); // Add log here
+    console.log("Token from cookies: ", token); // And here
     if (!token) {
       return req;
     }
 
     try {
       const { data } = jwt.verify(token, secret, { maxAge: expiration });
+      console.log('Decoded token:', data); // Add this
       req.user = data;
+      console.log('Request user after decoding token:', req.user); // And this
+
     } catch {
       console.log('Invalid token');
     }
