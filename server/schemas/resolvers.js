@@ -36,7 +36,7 @@ const resolvers = {
       const user = await User.create(input);
       const token = signToken(user);
       context.res.cookie('token', token, {
-        httpOnly: true,
+        httpOnly: false,
         // maxAge: 1000 * 60 * 60 * 2, // would set cookie expiration to 2 hours
         // secure: true, // set to true if your using https
       });
@@ -60,7 +60,7 @@ const resolvers = {
 
       const token = signToken(user);
       context.res.cookie('token', token, {
-        httpOnly: true,
+        httpOnly: false,
         // maxAge: 1000 * 60 * 60 * 2, // would set cookie expiration to 2 hours
         // secure: true, // set to true if your using https
       });
